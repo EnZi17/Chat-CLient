@@ -5,7 +5,7 @@ import javax.swing.*;
 
 public class Index {
 
-    private JFrame frame;
+    public JFrame frame;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {

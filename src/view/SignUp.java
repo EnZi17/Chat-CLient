@@ -4,12 +4,19 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import controller.SignUpController;
+
 public class SignUp {
 
-    private JFrame frame;
+    public JFrame frame;
     private JTextField txtUsername, txtEmail;
     private JPasswordField txtPassword;
     private JButton btnRegister, btnBack;
+    private SignUpController signUpController;
+    
+    public void closeSignUp() {
+    	this.frame.setVisible(false);
+    }
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -22,12 +29,17 @@ public class SignUp {
             }
         });
     }
+    
+    public SignUp(SignUpController signUpController) {
+    	this.signUpController = signUpController;
+    }
 
     public SignUp() {
         initialize();
     }
 
     private void initialize() {
+    	SignUpController signUpController = new SignUpController(this);
         frame = new JFrame("Đăng Ký");
         frame.setBounds(100, 100, 800, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,6 +100,7 @@ public class SignUp {
         rightPanel.add(txtPassword);
 
         btnRegister = new JButton("Đăng Ký");
+        btnRegister.addActionListener(signUpController);
         btnRegister.setBounds(100, 340, 300, 40);
         btnRegister.setBackground(new Color(0, 102, 204));
         btnRegister.setForeground(Color.BLUE);
@@ -97,6 +110,7 @@ public class SignUp {
         rightPanel.add(btnRegister);
 
         btnBack = new JButton("Quay Lại");
+        btnBack.addActionListener(signUpController);
         btnBack.setBounds(100, 390, 300, 40);
         btnBack.setBackground(new Color(0, 102, 204));
         btnBack.setForeground(Color.BLUE);

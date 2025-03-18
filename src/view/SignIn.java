@@ -8,7 +8,7 @@ import controller.SignInController;
 
 public class SignIn {
 
-    private JFrame frame;
+    public JFrame frame;
 	private JTextField txtEmail;
     private JPasswordField txtPassword;
     private JButton btnLogin, btnSignUp;
@@ -102,6 +102,7 @@ public class SignIn {
         rightPanel.add(btnLogin);
 
         btnSignUp = new JButton("Đăng Ký");
+        btnSignUp.addActionListener(controller);
         btnSignUp.setBounds(100, 330, 300, 40);
         btnLogin.setBackground(new Color(0, 102, 204));
         btnSignUp.setForeground(Color.BLUE);
