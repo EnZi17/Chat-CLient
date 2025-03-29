@@ -11,5 +11,11 @@
 	<classpathentry kind="lib" path="D:/Datas/Projects/Java/Chat/lib/okhttp-3.10.0.jar"/>
 	<classpathentry kind="lib" path="D:/Datas/Projects/Java/Chat/lib/okio-1.0.0.jar"/>
 	<classpathentry kind="lib" path="D:/Datas/Projects/Java/Chat/lib/socket.io-client-2.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/Datas/Projects/Java/Chat/lib/Java-WebSocket-1.5.2.jar"/>
+	<classpathentry kind="lib" path="D:/Datas/Projects/Java/Chat/lib/slf4j-api-2.0.17.jar"/>
+	<classpathentry kind="lib" path="com.jgoodies.forms_1.9.0.v20240327-0800.jar"/>
+	<classpathentry kind="lib" path="com.jgoodies.common_1.8.1.v20240327-0800.jar"/>
+	<classpathentry kind="lib" path="com.miglayout.swing_11.4.0.jar"/>
+	<classpathentry kind="lib" path="com.miglayout.core_11.4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

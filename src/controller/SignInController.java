@@ -37,7 +37,6 @@ public class SignInController implements ActionListener{
 		// TODO Auto-generated method stub
 		signIn.closeSignIn();
         SignUp window = new SignUp();
- 
         window.frame.setVisible(true);
 	}
 
@@ -55,7 +54,7 @@ public class SignInController implements ActionListener{
 			
 		}else {
 	        signIn.closeSignIn();
-	        Index window = new Index();
+	        Index window = new Index(respone);
             window.frame.setVisible(true);
 		}
 	}
