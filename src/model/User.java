@@ -1,5 +1,6 @@
 package model;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -10,7 +11,7 @@ public class User {
     private String avatar;
     private boolean isOnline;
     private Instant lastOnline;
-    private List<String> friends; 
+    private ArrayList<String> friends; 
 
     public User() {
         this.avatar = "";
@@ -18,7 +19,7 @@ public class User {
         this.lastOnline = null;
     }
 
-    public User(String id, String username, String email, String password, String avatar, boolean isOnline, Instant lastOnline, List<String> friends) {
+    public User(String id, String username, String email, String password, String avatar, boolean isOnline, Instant lastOnline, ArrayList<String> friends) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -45,12 +46,18 @@ public class User {
     public void setAvatar(String avatar) { this.avatar = avatar; }
 
     public boolean isOnline() { return isOnline; }
-    public void setOnline(boolean isOnline) { this.isOnline = isOnline; }
+    @Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password + ", avatar="
+				+ avatar + ", isOnline=" + isOnline + ", lastOnline=" + lastOnline + ", friends=" + friends + "]";
+	}
+
+	public void setOnline(boolean isOnline) { this.isOnline = isOnline; }
 
     public Instant getLastOnline() { return lastOnline; }
     public void setLastOnline(Instant lastOnline) { this.lastOnline = lastOnline; }
 
-    public List<String> getFriends() { return friends; }
-    public void setFriends(List<String> friends) { this.friends = friends; }
+    public ArrayList<String> getFriends() { return friends; }
+    public void setFriends(ArrayList<String> friends) { this.friends = friends; }
 }
 

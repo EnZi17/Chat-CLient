@@ -6,21 +6,39 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 
+import controller.IndexController;
+import model.Conversation;
+import model.Message;
+import model.User;
 import net.miginfocom.swing.MigLayout;
+
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.awt.event.ActionEvent;
 
 public class Index {
-    public String id;
+    public User user;
     public JFrame frame;
     private JTextField textField;
     private final JPanel panel_3 = new JPanel();
-    private JTextArea textField_1;
+    public JTextArea textField_1;
+    public JButton btnNewButton_3;
+    public ChatBubblePanel chatBubblePanel;
+    public JScrollPane scrollPane1;
+    public ArrayList<Conversation> conversations;
+    public HashMap<String, ArrayList<Message>> conversationMessages;
+    public JPanel userListPanel;
+    public String currentConversationId;
+    
 
-    public static void main(String[] args) {
+    
+	public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -38,12 +56,24 @@ public class Index {
         initialize();
     }
 
-    public Index(String id) {
-        this.id = id;
+    public Index(User user) {
+        this.user = user;
+        conversations = service.AuthService.getConversations(user.getId());
+        conversationMessages = new HashMap<String, ArrayList<Message>>();
+        for(Conversation conversation: conversations) {
+        	String conversationId = conversation.getId();
+        	ArrayList<Message> messages = service.AuthService.getMessages(conversationId);
+        	conversationMessages.put(conversationId, messages);
+        }
+        
         initialize();
     }
+    
 
     private void initialize() {
+    	
+    	IndexController controller = new IndexController(this);
+    	
         frame = new JFrame("Index");
         frame.getContentPane().setBackground(new Color(18, 20, 22));
         frame.setBackground(new Color(18, 20, 22));
@@ -92,6 +122,7 @@ public class Index {
 
         
         JButton btnNewButton_1 = new JButton("New button");
+        btnNewButton_1.addActionListener(controller);
         sl_panel.putConstraint(SpringLayout.NORTH, btnNewButton_1, -54, SpringLayout.SOUTH, panel);
         sl_panel.putConstraint(SpringLayout.WEST, btnNewButton_1, 0, SpringLayout.WEST, btnNewButton);
         sl_panel.putConstraint(SpringLayout.SOUTH, btnNewButton_1, -10, SpringLayout.SOUTH, panel);
@@ -110,8 +141,8 @@ public class Index {
         sl_panel_2.putConstraint(SpringLayout.WEST, panel_9, 2, SpringLayout.WEST, panel_2);
         sl_panel_2.putConstraint(SpringLayout.SOUTH, panel_9, 526, SpringLayout.NORTH, panel_2);
         sl_panel_2.putConstraint(SpringLayout.EAST, panel_9, 771, SpringLayout.WEST, panel_2);
-        ChatBubblePanel chatBubblePanel = new ChatBubblePanel();
-        JScrollPane scrollPane1 = new JScrollPane(chatBubblePanel);
+        chatBubblePanel  = new ChatBubblePanel();
+        scrollPane1 = new JScrollPane(chatBubblePanel);
         scrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane1.setPreferredSize(new Dimension(300, 400)); // Điều chỉnh kích thước nếu cần
         scrollPane1.setBorder(null);
@@ -139,6 +170,8 @@ public class Index {
         panel_6.setBackground(new Color(34, 38, 43));
         frame.getContentPane().add(panel_6);
         
+        
+        
         JPanel panel_5 = new JPanel();
         springLayout.putConstraint(SpringLayout.NORTH, panel_5, 639, SpringLayout.NORTH, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.WEST, panel_5, 2, SpringLayout.EAST, panel_1);
@@ -156,7 +189,8 @@ public class Index {
         SpringLayout sl_panel_5 = new SpringLayout();
         panel_5.setLayout(sl_panel_5);
         
-        JButton btnNewButton_3 = new JButton("New button");
+        btnNewButton_3 = new JButton("Gửi");
+        btnNewButton_3.addActionListener(controller);
         sl_panel_5.putConstraint(SpringLayout.NORTH, btnNewButton_3, 10, SpringLayout.NORTH, panel_5);
         sl_panel_5.putConstraint(SpringLayout.WEST, btnNewButton_3, -61, SpringLayout.EAST, panel_5);
         sl_panel_5.putConstraint(SpringLayout.SOUTH, btnNewButton_3, 34, SpringLayout.NORTH, panel_5);
@@ -192,39 +226,11 @@ public class Index {
         panel_8.setLayout(new MigLayout("fill, insets 10", "[fill]", "0[]0[]0")); // Thêm padding
 
         // Tạo panel chứa danh sách user
-        JPanel userListPanel = new JPanel(new MigLayout("fillx, wrap, insets 5")); // wrap để tự động xuống hàng
+        userListPanel = new JPanel(new MigLayout("fillx, wrap, insets 5")); // wrap để tự động xuống hàng
         userListPanel.setBorder(null);
         userListPanel.setBackground(new Color(34, 38, 43));
+        controller.updateConverstations(conversations);
 
-        for (int i = 1; i <= 20; i++) {
-            JButton userButton = new JButton("User " + i);
-            userButton.setPreferredSize(new Dimension(196, 50));
-
-            // Thiết lập màu nền
-            userButton.setBackground(new Color(44, 48, 53)); // Màu nền tối hơn
-            userButton.setForeground(Color.WHITE);
-            userButton.setFocusPainted(false);
-            userButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-            // Giúp màu nền có hiệu lực
-            userButton.setContentAreaFilled(false);
-            userButton.setOpaque(true);
-
-            // Hiệu ứng hover
-            userButton.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    userButton.setBackground(new Color(60, 64, 70)); // Màu sáng hơn khi hover
-                }
-
-                @Override
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    userButton.setBackground(new Color(44, 48, 53)); // Quay về màu cũ
-                }
-            });
-
-            userListPanel.add(userButton, "growx"); // growx để button mở rộng hết chiều ngang
-        }
 
 
         // Thêm userListPanel vào JScrollPane
@@ -265,6 +271,15 @@ public class Index {
         sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_2, 37, SpringLayout.WEST, panel_7);
         panel_7.add(btnNewButton_2);
 
-        
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Gọi chương trình bạn muốn chạy khi tắt cửa sổ
+                service.AuthService.setStatus(user.getId(), false);
+                controller.socket.close();
+                // Sau khi chạy xong, đóng app
+                frame.dispose(); // hoặc System.exit(0);
+            }
+        });
     }
 }

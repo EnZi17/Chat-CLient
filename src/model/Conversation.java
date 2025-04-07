@@ -25,7 +25,13 @@ public class Conversation {
     public void setId(String id) { this.id = id; }
 
     public List<String> getParticipants() { return participants; }
-    public void setParticipants(List<String> participants) { this.participants = participants; }
+    @Override
+	public String toString() {
+		return "Conversation [id=" + id + ", participants=" + participants + ", isGroup=" + isGroup + ", createdAt="
+				+ createdAt + ", updatedAt=" + updatedAt + "]";
+	}
+
+	public void setParticipants(List<String> participants) { this.participants = participants; }
 
     public boolean isGroup() { return isGroup; }
     public void setGroup(boolean isGroup) { this.isGroup = isGroup; }

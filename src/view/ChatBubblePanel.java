@@ -7,22 +7,7 @@ public class ChatBubblePanel extends JPanel {
     public ChatBubblePanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(34, 38, 43)); // Đổi màu nền của toàn bộ panel
-        
-        addMessage("Hello! How are you?", false);
-        addMessage("I'm good, thanks! How about youaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaâ?", true);
-        addMessage("I'm fine too. What are you doing?", false);
-        addMessage("Just coding some Java Swing stuff!", true);
-        addMessage("sadsađasad", false);
-        addMessage("Hello! How are you?", false);
-        addMessage("I'm good, thanks! How about youaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaâ?", true);
-        addMessage("I'm fine too. What are you doing?", false);
-        addMessage("Just coding some Java Swing stuff!", true);
-        addMessage("sadsađasad", false);
-        addMessage("Hello! How are you?", false);
-        addMessage("I'm good, thanks! How about youaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaâ?", true);
-        addMessage("I'm fine too. What are you doing?", false);
-        addMessage("Just coding some Java Swing stuff!", true);
-        addMessage("sadsađasad", false);
+
     }
 
     public void addMessage(String text, boolean isMine) {
@@ -33,7 +18,8 @@ public class ChatBubblePanel extends JPanel {
         JLabel messageLabel = new JLabel("<html><p style='max-width: 200px; word-wrap: break-word;'>" + text + "</p></html>");
         messageLabel.setOpaque(true);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        
+        
         if (isMine) {
             messageLabel.setBackground(new Color(173, 216, 230)); // Light Blue
         } else {
@@ -45,6 +31,8 @@ public class ChatBubblePanel extends JPanel {
         add(Box.createVerticalStrut(10));
         revalidate();
         repaint();
+        
+        
     }
 
     public static void main(String[] args) {

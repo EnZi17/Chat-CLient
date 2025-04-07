@@ -12,14 +12,9 @@ public class SignIn {
 	private JTextField txtEmail;
     private JPasswordField txtPassword;
     private JButton btnLogin, btnSignUp;
-    public SignInController controller;
     
     public void closeSignIn() {
     	this.frame.setVisible(false);
-    }
-
-    public SignIn(SignInController controller) {
-    	this.controller=controller;
     }
 
     public static void main(String[] args) {

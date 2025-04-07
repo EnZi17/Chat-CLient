@@ -38,7 +38,14 @@ public class Message {
     public String getConversation() { return conversation; }
     public void setConversation(String conversation) { this.conversation = conversation; }
 
-    public List<String> getReadBy() { return readBy; }
+    @Override
+	public String toString() {
+		return "Message [id=" + id + ", sender=" + sender + ", content=" + content + ", conversation=" + conversation
+				+ ", readBy=" + readBy + ", attachments=" + attachments + ", createdAt=" + createdAt + ", updatedAt="
+				+ updatedAt + "]";
+	}
+
+	public List<String> getReadBy() { return readBy; }
     public void setReadBy(List<String> readBy) { this.readBy = readBy; }
 
     public List<String> getAttachments() { return attachments; }
