@@ -130,5 +130,12 @@ public class AuthService {
 
         return result;
     }
+    public static String getUserStatus(String conversationId, String currentUserId) {
+        String url = BASE_API + "/users/status/by-conversation/" + conversationId + "?userId=" + currentUserId;
+        String response = myUtil.Util.getApi(url);
+
+        // Trả thẳng JSON string để xử lý ở UI/lớp khác
+        return response;
+    }
 
 }

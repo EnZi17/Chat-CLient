@@ -51,7 +51,7 @@ public class Index {
             }
         });
     }
-
+	
     public Index() {
         initialize();
     }
@@ -68,6 +68,7 @@ public class Index {
         
         initialize();
     }
+    
     
 
     private void initialize() {
@@ -198,15 +199,15 @@ public class Index {
         panel_5.add(btnNewButton_3);
         
         textField_1 = new JTextArea();
+        sl_panel_5.putConstraint(SpringLayout.EAST, textField_1, -57, SpringLayout.WEST, btnNewButton_3);
+        textField_1.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
         sl_panel_5.putConstraint(SpringLayout.SOUTH, textField_1, 0, SpringLayout.SOUTH, btnNewButton_3);
         textField_1.setCaretColor(Color.WHITE);
-        textField_1.setFont(new Font("Arial", Font.PLAIN, 14));
         textField_1.setBorder(null);
         textField_1.setForeground(new Color(255, 255, 255));
         textField_1.setBackground(new Color(34, 38, 43));
         sl_panel_5.putConstraint(SpringLayout.NORTH, textField_1, 0, SpringLayout.NORTH, btnNewButton_3);
         sl_panel_5.putConstraint(SpringLayout.WEST, textField_1, 10, SpringLayout.WEST, panel_5);
-        sl_panel_5.putConstraint(SpringLayout.EAST, textField_1, -6, SpringLayout.WEST, btnNewButton_3);
         panel_5.add(textField_1);
         textField_1.setColumns(10);
         
@@ -264,12 +265,44 @@ public class Index {
         panel_7.setLayout(sl_panel_7);
 
         
-        JButton btnNewButton_2 = new JButton("New button");
+        JButton btnNewButton_2 = new JButton("Emoji");
+        sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_2, 62, SpringLayout.WEST, panel_7);
+        btnNewButton_2.addActionListener(controller);
         sl_panel_7.putConstraint(SpringLayout.NORTH, btnNewButton_2, 5, SpringLayout.NORTH, panel_7);
         sl_panel_7.putConstraint(SpringLayout.WEST, btnNewButton_2, 5, SpringLayout.WEST, panel_7);
         sl_panel_7.putConstraint(SpringLayout.SOUTH, btnNewButton_2, -5, SpringLayout.SOUTH, panel_7);
-        sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_2, 37, SpringLayout.WEST, panel_7);
         panel_7.add(btnNewButton_2);
+        
+        JButton btnNewButton_2_1 = new JButton("File");
+        btnNewButton_2_1.addActionListener(controller);
+        sl_panel_7.putConstraint(SpringLayout.NORTH, btnNewButton_2_1, 0, SpringLayout.NORTH, btnNewButton_2);
+        sl_panel_7.putConstraint(SpringLayout.WEST, btnNewButton_2_1, 13, SpringLayout.EAST, btnNewButton_2);
+        sl_panel_7.putConstraint(SpringLayout.SOUTH, btnNewButton_2_1, 0, SpringLayout.SOUTH, btnNewButton_2);
+        sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_2_1, 78, SpringLayout.EAST, btnNewButton_2);
+        panel_7.add(btnNewButton_2_1);
+        
+        JButton btnNewButton_2_2 = new JButton("Voice");
+        btnNewButton_2_2.addActionListener(controller);
+        sl_panel_7.putConstraint(SpringLayout.NORTH, btnNewButton_2_2, 0, SpringLayout.NORTH, btnNewButton_2);
+        sl_panel_7.putConstraint(SpringLayout.WEST, btnNewButton_2_2, 13, SpringLayout.EAST, btnNewButton_2_1);
+        sl_panel_7.putConstraint(SpringLayout.SOUTH, btnNewButton_2_2, 0, SpringLayout.SOUTH, btnNewButton_2);
+        sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_2_2, 78, SpringLayout.EAST, btnNewButton_2_1);
+        panel_7.add(btnNewButton_2_2);
+        
+        JButton btnNewButton_4 = new JButton("GTTA");
+        btnNewButton_4.addActionListener(controller);
+        sl_panel_7.putConstraint(SpringLayout.NORTH, btnNewButton_4, 2, SpringLayout.NORTH, btnNewButton_2);
+        sl_panel_7.putConstraint(SpringLayout.WEST, btnNewButton_4, 16, SpringLayout.EAST, btnNewButton_2_2);
+        sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_4, 73, SpringLayout.EAST, btnNewButton_2_2);
+        panel_7.add(btnNewButton_4);
+        Timer timer = new Timer(5000, new ActionListener() { // 5000ms = 5 giây
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.updateConverstations(conversations);;
+            }
+        });
+        timer.start();
+
 
         frame.addWindowListener(new WindowAdapter() {
             @Override

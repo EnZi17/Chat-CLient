@@ -34,16 +34,34 @@ public class MySocket extends WebSocketClient{
 		
 	}
 
-	@Override
-	public void onMessage(String message) {
-		// TODO Auto-generated method stub
 
-		IndexController.getInstance().chatBubblePanel.addMessage(message, false);
-		SwingUtilities.invokeLater(() -> {
-            JScrollBar verticalBar = IndexController.getInstance().scrollPane1.getVerticalScrollBar();
-            verticalBar.setValue(verticalBar.getMaximum());
-        });
+	public void onMessage(String message) {
+	    JSONObject json = new JSONObject(message);
+	    
+	    if (json.getString("type").equals("newMessage")) {
+	        JSONObject msg = json.getJSONObject("message");
+
+	        String content = myUtil.SimpleAES.decrypt(msg.optString("content", ""));
+	        boolean hasAttachments = msg.has("attachments") && msg.getJSONArray("attachments").length() > 0;
+
+	        if (hasAttachments) {
+	            // Lấy danh sách file base64
+	            for (int i = 0; i < msg.getJSONArray("attachments").length(); i++) {
+	                String base64 = msg.getJSONArray("attachments").getString(i);
+	                IndexController.getInstance().chatBubblePanel.addFile(base64,  false);
+	            }
+	        } else {
+	            IndexController.getInstance().chatBubblePanel.addMessage(content, false);
+	        }
+
+	        // Cuộn xuống cuối chat sau khi thêm tin nhắn
+	        SwingUtilities.invokeLater(() -> {
+	            JScrollBar verticalBar = IndexController.getInstance().scrollPane1.getVerticalScrollBar();
+	            verticalBar.setValue(verticalBar.getMaximum());
+	        });
+	    }
 	}
+
 
 	@Override
 	public void onOpen(ServerHandshake arg0) {
@@ -57,5 +75,9 @@ public class MySocket extends WebSocketClient{
 	
 	public void sendMessage(String content, String conversationId) {
 		send("{\"type\": \"sendMessage\", \"sender\": \"" + id + "\", \"content\": \""+content+"\", \"conversationId\": \"" + conversationId + "\"}");
+	}
+	
+	public void sendFile(String file, String conversationId) {
+		send("{\"type\": \"sendMessage\", \"sender\": \"" + id +"\", \"content\": \""+" "+ "\",\"attachments\": [\""+file+"\"], \"conversationId\": \"" + conversationId + "\"}");
 	}
 }

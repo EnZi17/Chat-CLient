@@ -66,6 +66,12 @@ public class SignInController implements ActionListener{
 	        for (int i = 0; i < friendsJsonArray.length(); i++) {
 	            friends.add(friendsJsonArray.getString(i));
 	        }
+	        String lastOnlineStr = jsonResponse.optString("lastOnline", null);
+	        Instant lastOnline = null;
+	        if (lastOnlineStr != null && !lastOnlineStr.isEmpty()) {
+	            lastOnline = Instant.parse(lastOnlineStr);
+	        }
+
 	        User user = new User(
 	            jsonResponse.getString("_id"),
 	            jsonResponse.getString("username"),
@@ -73,8 +79,7 @@ public class SignInController implements ActionListener{
 	            jsonResponse.getString("password"),  // Đảm bảo mật khẩu không được gửi trong thực tế
 	            jsonResponse.optString("avatar", ""),  // Nếu không có avatar, đặt giá trị mặc định
 	            jsonResponse.getBoolean("isOnline"),
-	            Instant.parse(jsonResponse.getString("lastOnline")),
-	            // Giả sử "friends" là một mảng các ID bạn bè
+	            lastOnline,
 	            friends
 	        );
 
