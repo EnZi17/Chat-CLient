@@ -6,7 +6,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 
-import myUtil.Stego;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -15,14 +14,14 @@ import java.util.Base64;
 public class ChatBubblePanel extends JPanel {
     public ChatBubblePanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(new Color(34, 38, 43)); // Đổi màu nền của toàn bộ panel
+        setBackground(new Color(235, 236, 240)); // Đổi màu nền của toàn bộ panel
 
     }
 
     public void addMessage(String text, boolean isMine) {
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new FlowLayout(isMine ? FlowLayout.RIGHT : FlowLayout.LEFT));
-        messagePanel.setBackground(new Color(34, 38, 43)); // Đổi màu nền của từng dòng chat
+        messagePanel.setBackground(new Color(235, 236, 240)); // Đổi màu nền của từng dòng chat
 
         JLabel messageLabel = new JLabel("<html><p style='max-width: 200px; word-wrap: break-word;'>" + text + "</p></html>");
         messageLabel.setOpaque(true);
@@ -30,9 +29,9 @@ public class ChatBubblePanel extends JPanel {
         
         
         if (isMine) {
-            messageLabel.setBackground(new Color(173, 216, 230)); // Light Blue
+            messageLabel.setBackground(new Color(219,235,255)); // Light Blue
         } else {
-            messageLabel.setBackground(new Color(220, 220, 220)); // Light Gray
+            messageLabel.setBackground(Color.WHITE); // Light Gray
         }
 
         messagePanel.add(messageLabel);
@@ -76,7 +75,7 @@ public class ChatBubblePanel extends JPanel {
     public void addFile(String attachmentString, boolean isMine) {
         JPanel filePanel = new JPanel();
         filePanel.setLayout(new FlowLayout(isMine ? FlowLayout.RIGHT : FlowLayout.LEFT));
-        filePanel.setBackground(new Color(34, 38, 43));
+        filePanel.setBackground(new Color(235, 236, 240));
 
         String[] parts = attachmentString.split("\\|");
         String fileName = parts.length > 0 ? parts[0] : "unknown.png";
@@ -101,19 +100,7 @@ public class ChatBubblePanel extends JPanel {
                 JLabel imageLabel = new JLabel(imageIcon);
                 filePanel.add(imageLabel);
 
-                // 🔍 Giải mã tin ẩn nếu là ảnh có tiền tố secret_
-                if (fileName.startsWith("secret_")) {
-                    try {
-                        String secret = Stego.decodeTextFromImage(img,length);
-                        if (secret != null && !secret.isBlank()) {
-                            JLabel secretLabel = new JLabel("🔐 " + secret);
-                            secretLabel.setForeground(Color.YELLOW);
-                            filePanel.add(secretLabel);
-                        }
-                    } catch (Exception e) {
-                        // Không có tin hoặc lỗi giải mã
-                    }
-                }
+                
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -143,7 +130,7 @@ public class ChatBubblePanel extends JPanel {
 
         } else {
             JLabel fileLabel = new JLabel("📎 " + fileName);
-            fileLabel.setForeground(Color.WHITE);
+            fileLabel.setForeground(Color.black);
 
             JButton downloadButton = new JButton("Tải xuống");
             downloadButton.addActionListener(e -> {

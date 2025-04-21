@@ -1,15 +1,20 @@
 package mysocket;
 
+import java.awt.print.Printable;
 import java.net.URI;
+import java.time.Instant;
+import java.util.ArrayList;
 
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import controller.IndexController;
+import model.Message;
 import view.Index;
 
 
@@ -41,7 +46,7 @@ public class MySocket extends WebSocketClient{
 	    if (json.getString("type").equals("newMessage")) {
 	        JSONObject msg = json.getJSONObject("message");
 
-	        String content = myUtil.SimpleAES.decrypt(msg.optString("content", ""));
+	        String content = msg.optString("content", "");
 	        boolean hasAttachments = msg.has("attachments") && msg.getJSONArray("attachments").length() > 0;
 
 	        if (hasAttachments) {
@@ -53,12 +58,15 @@ public class MySocket extends WebSocketClient{
 	        } else {
 	            IndexController.getInstance().chatBubblePanel.addMessage(content, false);
 	        }
+	        
+	        
 
 	        // Cuộn xuống cuối chat sau khi thêm tin nhắn
 	        SwingUtilities.invokeLater(() -> {
 	            JScrollBar verticalBar = IndexController.getInstance().scrollPane1.getVerticalScrollBar();
 	            verticalBar.setValue(verticalBar.getMaximum());
 	        });
+	        System.out.println(2);
 	    }
 	}
 

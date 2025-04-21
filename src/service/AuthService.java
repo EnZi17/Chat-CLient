@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import model.Conversation;
 import model.Message;
+import model.User;
 
 public class AuthService {
     private static final String BASE_API = "http://localhost:5000";
@@ -79,10 +80,11 @@ public class AuthService {
             }
 
             boolean isGroup = obj.optBoolean("isGroup", false);
+            String name=obj.optString("name","");
             Instant createdAt = Instant.parse(obj.getString("createdAt"));
             Instant updatedAt = Instant.parse(obj.getString("updatedAt"));
 
-            Conversation conversation = new Conversation(convoId, participants, isGroup, createdAt, updatedAt);
+            Conversation conversation = new Conversation(convoId, participants, isGroup,name, createdAt, updatedAt);
             result.add(conversation);
     }
 	    return result;
@@ -137,5 +139,104 @@ public class AuthService {
         // Trả thẳng JSON string để xử lý ở UI/lớp khác
         return response;
     }
+    public static User getUserByID(String id) {
+        String url = BASE_API + "/users/" + id;
+        String response = myUtil.Util.getApi(url);
+        JSONObject obj = new JSONObject(response);
+
+        String userId = obj.getString("_id");
+        String username = obj.optString("username", "");
+        String email = obj.optString("email", "");
+        String password = obj.optString("password", ""); 
+        String avatar = obj.optString("avatar", "");
+        boolean isOnline = obj.optBoolean("isOnline", false);
+
+        Instant lastOnline = null;
+        if (!obj.isNull("lastOnline")) {
+            lastOnline = Instant.parse(obj.getString("lastOnline"));
+        }
+
+        ArrayList<String> friends = new ArrayList<>();
+        JSONArray friendsArray = obj.optJSONArray("friends");
+        if (friendsArray != null) {
+            for (int i = 0; i < friendsArray.length(); i++) {
+                friends.add(friendsArray.getString(i));
+            }
+        }
+
+        return new User(userId, username, email, password, avatar, isOnline, lastOnline, friends);
+    }
+    
+    public static User getUserByEmail(String email) {
+        String url = BASE_API + "/users/by-email/" + email;
+
+        try {
+            String response = myUtil.Util.getApi(url);
+            JSONObject obj = new JSONObject(response);
+
+            String userId = obj.getString("_id");
+            String username = obj.optString("username", "");
+            String userEmail = obj.optString("email", "");
+            String password = obj.optString("password", "");
+            String avatar = obj.optString("avatar", "");
+            boolean isOnline = obj.optBoolean("isOnline", false);
+
+            Instant lastOnline = null;
+            if (!obj.isNull("lastOnline")) {
+                lastOnline = Instant.parse(obj.getString("lastOnline"));
+            }
+
+            ArrayList<String> friends = new ArrayList<>();
+            JSONArray friendsArray = obj.optJSONArray("friends");
+            if (friendsArray != null) {
+                for (int i = 0; i < friendsArray.length(); i++) {
+                    friends.add(friendsArray.getString(i));
+                }
+            }
+
+            return new User(userId, username, userEmail, password, avatar, isOnline, lastOnline, friends);
+
+        } catch (Exception e) {
+            // Kiểm tra nếu response là lỗi 404 (nếu Util ném ngoại lệ có thông tin này)
+            if (e.getMessage() != null && e.getMessage().contains("404")) {
+                return null;
+            }
+
+            // Log lỗi và có thể xử lý thêm nếu cần
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String createConversation(ArrayList<String> participantIds, boolean isGroup, String name) {
+        String url = BASE_API + "/conversations";
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("participants", new JSONArray(participantIds));
+        requestBody.put("isGroup", isGroup);
+
+        if (name != null && !name.isEmpty()) {
+            requestBody.put("name", name);
+        }
+
+        try {
+            String response = myUtil.Util.postApi(url, requestBody.toString());
+            JSONObject responseObject = new JSONObject(response);
+
+            String conversationId = responseObject.getString("_id"); // Lấy conversationId
+            System.out.println("Tạo conversation thành công. ID: " + conversationId);
+            return conversationId;
+
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tạo conversation: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+
+
+
+
 
 }

@@ -35,6 +35,7 @@ public class Index {
     public HashMap<String, ArrayList<Message>> conversationMessages;
     public JPanel userListPanel;
     public String currentConversationId;
+    private JTextField textField_2;
     
 
     
@@ -58,25 +59,30 @@ public class Index {
 
     public Index(User user) {
         this.user = user;
-        conversations = service.AuthService.getConversations(user.getId());
-        conversationMessages = new HashMap<String, ArrayList<Message>>();
-        for(Conversation conversation: conversations) {
-        	String conversationId = conversation.getId();
-        	ArrayList<Message> messages = service.AuthService.getMessages(conversationId);
-        	conversationMessages.put(conversationId, messages);
-        }
+        updateMess();
         
         initialize();
     }
     
     
 
-    private void initialize() {
+    public void updateMess() {
+		// TODO Auto-generated method stub
+    	conversations = service.AuthService.getConversations(user.getId());
+        conversationMessages = new HashMap<String, ArrayList<Message>>();
+        for(Conversation conversation: conversations) {
+        	String conversationId = conversation.getId();
+        	ArrayList<Message> messages = service.AuthService.getMessages(conversationId);
+        	conversationMessages.put(conversationId, messages);
+        }
+	}
+
+	private void initialize() {
     	
     	IndexController controller = new IndexController(this);
     	
         frame = new JFrame("Index");
-        frame.getContentPane().setBackground(new Color(18, 20, 22));
+        frame.getContentPane().setBackground(new Color(217,217,217));
         frame.setBackground(new Color(18, 20, 22));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Hiển thị full màn hình
@@ -91,7 +97,7 @@ public class Index {
         springLayout.putConstraint(SpringLayout.NORTH, panel, 0, SpringLayout.NORTH, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.WEST, panel, 0, SpringLayout.WEST, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.SOUTH, panel, 683, SpringLayout.NORTH, frame.getContentPane());
-        panel.setBackground(new Color(18,20,22));
+        panel.setBackground(new Color(0, 90, 224));
         frame.getContentPane().add(panel);
         
         JPanel panel_1 = new JPanel();
@@ -130,7 +136,7 @@ public class Index {
         sl_panel.putConstraint(SpringLayout.EAST, btnNewButton_1, 54, SpringLayout.WEST, panel);
         panel.add(btnNewButton_1);
         springLayout.putConstraint(SpringLayout.EAST, panel_2, 0, SpringLayout.EAST, frame.getContentPane());
-        panel_2.setBackground(new Color(18, 20, 22));
+        panel_2.setBackground(new Color(217,217,217));
         frame.getContentPane().add(panel_2);
         SpringLayout sl_panel_2 = new SpringLayout();
         panel_2.setLayout(sl_panel_2);
@@ -143,6 +149,7 @@ public class Index {
         sl_panel_2.putConstraint(SpringLayout.SOUTH, panel_9, 526, SpringLayout.NORTH, panel_2);
         sl_panel_2.putConstraint(SpringLayout.EAST, panel_9, 771, SpringLayout.WEST, panel_2);
         chatBubblePanel  = new ChatBubblePanel();
+        chatBubblePanel.setBackground(new Color(235, 236, 240));
         scrollPane1 = new JScrollPane(chatBubblePanel);
         scrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane1.setPreferredSize(new Dimension(300, 400)); // Điều chỉnh kích thước nếu cần
@@ -159,16 +166,34 @@ public class Index {
         springLayout.putConstraint(SpringLayout.WEST, panel_4, 0, SpringLayout.EAST, panel);
         springLayout.putConstraint(SpringLayout.SOUTH, panel_4, -2, SpringLayout.NORTH, panel_1);
         springLayout.putConstraint(SpringLayout.EAST, panel_4, 0, SpringLayout.EAST, panel_1);
-        panel_4.setBackground(new Color(34, 38, 43));
+        panel_4.setBackground(new Color(255, 255, 255));
         frame.getContentPane().add(panel_4);
         
         JPanel panel_6 = new JPanel();
         springLayout.putConstraint(SpringLayout.NORTH, panel_2, 0, SpringLayout.SOUTH, panel_6);
         springLayout.putConstraint(SpringLayout.WEST, panel_6, 2, SpringLayout.EAST, panel_4);
+        SpringLayout sl_panel_4 = new SpringLayout();
+        panel_4.setLayout(sl_panel_4);
+        
+        textField_2 = new JTextField();
+        sl_panel_4.putConstraint(SpringLayout.NORTH, textField_2, 15, SpringLayout.NORTH, panel_4);
+        sl_panel_4.putConstraint(SpringLayout.WEST, textField_2, 10, SpringLayout.WEST, panel_4);
+        sl_panel_4.putConstraint(SpringLayout.SOUTH, textField_2, -41, SpringLayout.SOUTH, panel_4);
+        sl_panel_4.putConstraint(SpringLayout.EAST, textField_2, -54, SpringLayout.EAST, panel_4);
+        panel_4.add(textField_2);
+        textField_2.setColumns(10);
+        
+        JButton btnNewButton_4 = new JButton("Thêm bạn");
+        btnNewButton_4.addActionListener(controller);
+        sl_panel_4.putConstraint(SpringLayout.NORTH, btnNewButton_4, 0, SpringLayout.NORTH, textField_2);
+        sl_panel_4.putConstraint(SpringLayout.WEST, btnNewButton_4, 6, SpringLayout.EAST, textField_2);
+        sl_panel_4.putConstraint(SpringLayout.SOUTH, btnNewButton_4, 0, SpringLayout.SOUTH, textField_2);
+        sl_panel_4.putConstraint(SpringLayout.EAST, btnNewButton_4, -10, SpringLayout.EAST, panel_4);
+        panel_4.add(btnNewButton_4);
         springLayout.putConstraint(SpringLayout.EAST, panel_6, 0, SpringLayout.EAST, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.NORTH, panel_6, 0, SpringLayout.NORTH, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.SOUTH, panel_6, 73, SpringLayout.NORTH, frame.getContentPane());
-        panel_6.setBackground(new Color(34, 38, 43));
+        panel_6.setBackground(new Color(255, 255, 255));
         frame.getContentPane().add(panel_6);
         
         
@@ -178,7 +203,7 @@ public class Index {
         springLayout.putConstraint(SpringLayout.WEST, panel_5, 2, SpringLayout.EAST, panel_1);
         springLayout.putConstraint(SpringLayout.SOUTH, panel_5, 0, SpringLayout.SOUTH, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.EAST, panel_5, 0, SpringLayout.EAST, frame.getContentPane());
-        panel_5.setBackground(new Color(34, 38, 43));
+        panel_5.setBackground(new Color(255, 255, 255));
         frame.getContentPane().add(panel_5);
         
         JPanel panel_7 = new JPanel();
@@ -199,13 +224,12 @@ public class Index {
         panel_5.add(btnNewButton_3);
         
         textField_1 = new JTextArea();
-        sl_panel_5.putConstraint(SpringLayout.EAST, textField_1, -57, SpringLayout.WEST, btnNewButton_3);
-        textField_1.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
+        sl_panel_5.putConstraint(SpringLayout.EAST, textField_1, -50, SpringLayout.WEST, btnNewButton_3);
         sl_panel_5.putConstraint(SpringLayout.SOUTH, textField_1, 0, SpringLayout.SOUTH, btnNewButton_3);
-        textField_1.setCaretColor(Color.WHITE);
+        textField_1.setCaretColor(Color.BLACK);
         textField_1.setBorder(null);
-        textField_1.setForeground(new Color(255, 255, 255));
-        textField_1.setBackground(new Color(34, 38, 43));
+        textField_1.setForeground(Color.BLACK);
+        textField_1.setBackground(new Color(255, 255, 255));
         sl_panel_5.putConstraint(SpringLayout.NORTH, textField_1, 0, SpringLayout.NORTH, btnNewButton_3);
         sl_panel_5.putConstraint(SpringLayout.WEST, textField_1, 10, SpringLayout.WEST, panel_5);
         panel_5.add(textField_1);
@@ -223,13 +247,13 @@ public class Index {
         
         JPanel panel_8 = new JPanel();
         panel_8.setBorder(null);
-        panel_8.setBackground(new Color(34, 38, 43));
+        panel_8.setBackground(new Color(255, 255, 255));
         panel_8.setLayout(new MigLayout("fill, insets 10", "[fill]", "0[]0[]0")); // Thêm padding
 
         // Tạo panel chứa danh sách user
         userListPanel = new JPanel(new MigLayout("fillx, wrap, insets 5")); // wrap để tự động xuống hàng
         userListPanel.setBorder(null);
-        userListPanel.setBackground(new Color(34, 38, 43));
+        userListPanel.setBackground(Color.white);
         controller.updateConverstations(conversations);
 
 
@@ -241,7 +265,7 @@ public class Index {
 
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(12, 0)); // Làm scrollbar nhỏ hơn
         scrollPane.setBorder(null);
-        scrollPane.setBackground(new Color(34, 38, 43));
+        scrollPane.setBackground(Color.white);
 
         // Thêm JScrollPane vào panel_8
         panel_8.add(scrollPane, "grow");
@@ -259,7 +283,7 @@ public class Index {
 
         
         springLayout.putConstraint(SpringLayout.EAST, panel_7, 0, SpringLayout.EAST, frame.getContentPane());
-        panel_7.setBackground(new Color(34, 38, 43));
+        panel_7.setBackground(new Color(255, 255, 255));
         frame.getContentPane().add(panel_7);
         SpringLayout sl_panel_7 = new SpringLayout();
         panel_7.setLayout(sl_panel_7);
@@ -289,12 +313,7 @@ public class Index {
         sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_2_2, 78, SpringLayout.EAST, btnNewButton_2_1);
         panel_7.add(btnNewButton_2_2);
         
-        JButton btnNewButton_4 = new JButton("GTTA");
-        btnNewButton_4.addActionListener(controller);
-        sl_panel_7.putConstraint(SpringLayout.NORTH, btnNewButton_4, 2, SpringLayout.NORTH, btnNewButton_2);
-        sl_panel_7.putConstraint(SpringLayout.WEST, btnNewButton_4, 16, SpringLayout.EAST, btnNewButton_2_2);
-        sl_panel_7.putConstraint(SpringLayout.EAST, btnNewButton_4, 73, SpringLayout.EAST, btnNewButton_2_2);
-        panel_7.add(btnNewButton_4);
+        
         Timer timer = new Timer(5000, new ActionListener() { // 5000ms = 5 giây
             @Override
             public void actionPerformed(ActionEvent e) {

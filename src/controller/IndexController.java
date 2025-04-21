@@ -3,6 +3,7 @@ package controller;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,12 +39,14 @@ import java.util.List;
 
 // Model Message của bạn
 import model.Message;
+import model.User;
 import myUtil.AudioRecorder;
-import myUtil.Stego;
 import model.Conversation;
 import model.Message;
 import mysocket.MySocket;
+
 import view.EmojiPickerView;
+import view.Find;
 import view.Index;
 
 
@@ -87,89 +90,65 @@ public class IndexController implements ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		String src = e.getActionCommand();
-		System.out.println(src);
-		switch (src) {
-		case "Gửi": {
-			sendManagement();
-			break;
-		}
-		case "Emoji": {
-			popUpEmojiManagement();
-			break;
-		}
-		case "File": {
-			fileManagement();
-			break;
-		}
-		case "Voice": {
-			voiceManagement();
-			break;
-		}
-		case "GTTA": {
-			gttaManagement();
-			break;
-		}
-		default:
-			updateMessages(src);
-			SwingUtilities.invokeLater(() -> {
-	            JScrollBar verticalBar = this.index.scrollPane1.getVerticalScrollBar();
-	            verticalBar.setValue(verticalBar.getMaximum());
-	        });
-		}
-	}
-	
-	
-	
-	private void gttaManagement() {
-	    JFileChooser fileChooser = new JFileChooser();
-	    int returnVal = fileChooser.showOpenDialog(null);
+	    Object source = e.getSource();
 
-	    if (returnVal == JFileChooser.APPROVE_OPTION) {
-	        File imageFile = fileChooser.getSelectedFile();
+	    if (source instanceof JButton) {
+	        JButton btn = (JButton) source;
+	        Object conversationId = btn.getClientProperty("conversationId");
 
-	        String secretMessage = JOptionPane.showInputDialog(null, "Nhập tin nhắn cần giấu trong ảnh:");
+	        if (conversationId != null) {
+	            System.out.println("Clicked conversation ID: " + conversationId);
+	            updateMessages(conversationId.toString());
 
-	        if (secretMessage != null && !secretMessage.isEmpty()) {
-	            try {
-	                BufferedImage originalImage = ImageIO.read(imageFile);
-
-	                // Mã hóa tin ẩn
-	                BufferedImage stegoImage = Stego.encodeTextToImage(secretMessage, originalImage);
-
-	                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	                ImageIO.write(stegoImage, "png", baos);
-	                baos.flush();
-	                byte[] stegoImageBytes = baos.toByteArray();
-	                baos.close();
-
-	                String base64StegoImage = Base64.getEncoder().encodeToString(stegoImageBytes);
-	                String fileName = "secret_" + imageFile.getName();
-	                int secretLength = secretMessage.length();
-
-	                // Định dạng mới: tên|base64|độ dài
-	                String attachment = fileName + "|" + base64StegoImage + "|" + secretLength;
-
-	                // Gửi file và hiển thị luôn
-	                socket.sendFile(attachment, index.currentConversationId);
-	                index.chatBubblePanel.addFile(attachment, true);
-
-	                SwingUtilities.invokeLater(() -> {
-	                    JScrollBar verticalBar = index.scrollPane1.getVerticalScrollBar();
-	                    verticalBar.setValue(verticalBar.getMaximum());
-	                });
-
-	            } catch (IOException e) {
-	                e.printStackTrace();
-	                JOptionPane.showMessageDialog(null, "Lỗi khi xử lý ảnh.");
-	            }
+	            SwingUtilities.invokeLater(() -> {
+	                JScrollBar verticalBar = this.index.scrollPane1.getVerticalScrollBar();
+	                verticalBar.setValue(verticalBar.getMaximum());
+	            });
+	            return;
 	        }
+	    }
+
+	    String src = e.getActionCommand();
+	    switch (src) {
+	        case "Gửi":
+	            sendManagement();
+	            break;
+	        case "Emoji":
+	            popUpEmojiManagement();
+	            break;
+	        case "File":
+	            fileManagement();
+	            break;
+	        case "Voice":
+	            voiceManagement();
+	            break;
+	        case "Thêm bạn":
+	            addFriendManagement();
+	            break;
+	        
+	        default:
+	            System.out.println("Unrecognized button: " + src);
 	    }
 	}
 
+	
+	
+	
 
 
+
+
+	private void addFriendManagement() {
+		// TODO Auto-generated method stub
+		EventQueue.invokeLater(() -> {
+            try {
+                Find window = new Find(this);
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+	}
 
 	private void voiceManagement() {
 	    try {
@@ -246,26 +225,39 @@ public class IndexController implements ActionListener{
 	}
 
 	private void updateMessages(String converstationId) {
-		// TODO Auto-generated method stub
-		index.currentConversationId= converstationId;
-		ArrayList<Message> messages = this.index.conversationMessages.get(converstationId);
-		for(Message message: messages) {
-			Boolean flag = message.getSender().equals(index.user.getId())?true:false;
-			if(message.getAttachments().isEmpty()) {
-				index.chatBubblePanel.addMessage(message.getContent(), flag);
-			}else {
-				index.chatBubblePanel.addFile(message.getAttachments().get(0), flag);
-			}
-			
-		}
+	    index.currentConversationId = converstationId;
+	    index.updateMess();
+	    
+	    ArrayList<Message> messages = this.index.conversationMessages.get(converstationId);
+
+	    // Xóa tất cả các message cũ trên giao diện
+	    index.chatBubblePanel.removeAll();
+	    index.chatBubblePanel.revalidate();
+	    index.chatBubblePanel.repaint();
+	    
+	    if (messages == null) {
+	        System.err.println("Danh sách messages bị null!");
+	        return;
+	    }
+
+	    for (Message message : messages) {
+	        boolean isSender = message.getSender().equals(index.user.getId());
+	        if (message.getAttachments().isEmpty()) {
+	            index.chatBubblePanel.addMessage(message.getContent(), isSender);
+	        } else {
+	            index.chatBubblePanel.addFile(message.getAttachments().get(0), isSender);
+	        }
+	    }
 	}
+
 	private void sendManagement() {
 		// TODO Auto-generated method stub
 		
 		String message =index.textField_1.getText();
 		if(!message.equals("")) {
 
-			socket.sendMessage(myUtil.SimpleAES.encrypt(message),index.currentConversationId);
+			socket.sendMessage(message,index.currentConversationId);
+			
 			index.textField_1.setText("");
 			index.chatBubblePanel.addMessage(message, true);
 			SwingUtilities.invokeLater(() -> {
@@ -281,47 +273,49 @@ public class IndexController implements ActionListener{
 	public void updateConverstations(ArrayList<Conversation> conversations) {
 	    this.index.userListPanel.removeAll();
 
-
 	    for (Conversation conversation : conversations) {
-	        JButton userButton = new JButton(conversation.getId());
-	        userButton.setPreferredSize(new Dimension(196, 50));
+	        String buttonText = "";
+	        Color textColor = Color.BLACK;
 
-	        // Giao diện nút
-	        userButton.setBackground(new Color(44, 48, 53));
-	        userButton.setForeground(Color.WHITE);
+	        if (conversation.isGroup()) {
+	            buttonText = conversation.getName() != null ? conversation.getName() : "Group Chat";
+	        } else {
+	            for (String participantId : conversation.getParticipants()) {
+	                if (!participantId.equals(index.user.getId())) {
+	                    try {
+	                        User otherUser = service.AuthService.getUserByID(participantId);
+	                        buttonText = otherUser.getUsername();
+	                        textColor = otherUser.isOnline() ? Color.GREEN : Color.BLACK;
+	                    } catch (Exception e) {
+	                        e.printStackTrace();
+	                        buttonText = "Unknown User";
+	                    }
+	                    break;
+	                }
+	            }
+	        }
+
+	        JButton userButton = new JButton(buttonText);
+	        userButton.putClientProperty("conversationId", conversation.getId()); // Gán ID thật
+	        userButton.setPreferredSize(new Dimension(196, 50));
+	        userButton.setBackground(Color.white);
+	        userButton.setForeground(textColor);
 	        userButton.setFocusPainted(false);
 	        userButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 	        userButton.setContentAreaFilled(false);
 	        userButton.setOpaque(true);
 
-	        // Hover effect
 	        userButton.addMouseListener(new java.awt.event.MouseAdapter() {
 	            @Override
 	            public void mouseEntered(java.awt.event.MouseEvent evt) {
-	                userButton.setBackground(new Color(60, 64, 70));
+	                userButton.setBackground(new Color(235, 236, 240));
 	            }
 
 	            @Override
 	            public void mouseExited(java.awt.event.MouseEvent evt) {
-	                userButton.setBackground(new Color(44, 48, 53));
+	                userButton.setBackground(Color.white);
 	            }
 	        });
-
-	        // Gọi API để lấy trạng thái người dùng nếu không phải nhóm
-	        if (!conversation.isGroup()) {
-	            try {
-	                String response = service.AuthService.getUserStatus(conversation.getId(), index.user.getId());
-
-	                // Giả định response là JSON như: {"online": true}
-	                JSONObject json = new JSONObject(response);
-	                boolean isOnline = json.getBoolean("isOnline");
-
-	                userButton.setForeground(isOnline ? Color.GREEN : Color.LIGHT_GRAY);
-	            } catch (Exception e) {
-	                e.printStackTrace(); // Log lỗi nếu parse thất bại
-	                userButton.setForeground(Color.LIGHT_GRAY); // Mặc định nếu lỗi
-	            }
-	        }
 
 	        userButton.addActionListener(this);
 	        this.index.userListPanel.add(userButton, "growx");
@@ -330,6 +324,17 @@ public class IndexController implements ActionListener{
 	    this.index.userListPanel.revalidate();
 	    this.index.userListPanel.repaint();
 	}
+
+	public void addConverstation(User user) {
+		ArrayList<String> idStrings = new ArrayList<String>();
+		idStrings.add(this.index.user.getId());
+		idStrings.add(user.getId());
+		String tmp=service.AuthService.createConversation(idStrings, false, null);
+		this.index.conversations = service.AuthService.getConversations(this.index.user.getId());
+		updateConverstations(this.index.conversations);
+		updateMessages(tmp);
+	}
+
 
 	
 	
