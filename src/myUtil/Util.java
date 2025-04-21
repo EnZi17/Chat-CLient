@@ -7,7 +7,34 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Util {
+	
+	public static boolean checkEmail(String email) {
+		return email.endsWith("@gmail.com");
+	}
+	
+	public static boolean checkPassword(String password) {
+	    if (password == null || password.length() < 6) {
+	        return false;
+	    }
 
+	    boolean hasUppercase = false;
+	    boolean hasSpecialChar = false;
+	    boolean hasDigit = false;
+
+	    for (char c : password.toCharArray()) {
+	        if (Character.isUpperCase(c)) {
+	            hasUppercase = true;
+	        } else if (!Character.isLetterOrDigit(c)) {
+	            hasSpecialChar = true;
+	        } else if (Character.isDigit(c)) {
+	            hasDigit = true;
+	        }
+	    }
+
+	    return hasUppercase && hasSpecialChar && hasDigit;
+	}
+
+	
     public static String getApi(String api) {
         HttpURLConnection connection = null;
         BufferedReader reader = null;

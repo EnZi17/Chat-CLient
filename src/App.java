@@ -7,13 +7,7 @@ import view.Index;
 
 public class App {
 	public static void main(String[] args) {
-		String tmp ="{"
-                + "\"participants\": [\"a\", \"b\"],"
-                + "\"isGroup\": false,"
-                + "\"name\": false"
-                + "}";
-               System.out.println(myUtil.Util.postApi("http://localhost:5000/conversations", tmp));
-               
-           
+		//System.out.println(service.AuthService.resetPassword("minhthongvo170106@gmail.com"));
+		System.out.println(myUtil.SimpleAES.encrypt("gF2[H<Xu"));
 	}
 }

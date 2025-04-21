@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.time.Instant;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,7 +41,7 @@ public class SignInController implements ActionListener{
 	}
 	private void SignUpManagement() {
 		// TODO Auto-generated method stub
-		signIn.closeSignIn();
+		this.signIn.closeSignIn();
         SignUp window = new SignUp();
         window.frame.setVisible(true);
 	}
@@ -49,16 +51,50 @@ public class SignInController implements ActionListener{
 	    // Lấy thông tin đăng nhập từ người dùng
 	    String email = signIn.getTxtEmail().getText();
 	    String password = signIn.getTxtPassword().getText();
+	    String newPassword =myUtil.SimpleAES.encrypt(password);
+
 	    
 	    // Gọi AuthService.login để nhận phản hồi từ server (JSON)
-	    String response = service.AuthService.login(email, password);
+	    String response = service.AuthService.login(email, newPassword);
+	    System.out.println(response);
 
 	    // Kiểm tra nếu có lỗi đăng nhập
 	    if (response.equals("Wrong password")) {
-	        // Xử lý khi mật khẩu sai
+	    	int option = JOptionPane.showOptionDialog(
+	                null,
+	                "Mật khẩu không đúng. Bạn có muốn nhập lại hay quên mật khẩu?",
+	                "Lỗi đăng nhập",
+	                JOptionPane.YES_NO_OPTION,
+	                JOptionPane.QUESTION_MESSAGE,
+	                null,
+	                new String[]{"Nhập lại", "Quên mật khẩu"},
+	                "Nhập lại"
+	            );
+
+	            if (option == JOptionPane.YES_OPTION) {
+	                
+	            } else {
+	                ForgotPassword();
+	            }
 	    } else if (response.equals("Email does not exist")) {
-	        // Xử lý khi email không tồn tại
-	    } else {
+	        int option = JOptionPane.showOptionDialog(
+	                null,
+	                "Email không tồn tại. Bạn có muốn nhập lại hay đăng ký mới?",
+	                "Lỗi đăng ký",
+	                JOptionPane.YES_NO_OPTION,
+	                JOptionPane.QUESTION_MESSAGE,
+	                null,
+	                new String[]{"Nhập lại", "Đăng ký"},
+	                "Nhập lại"
+	            );
+
+	            if (option == JOptionPane.YES_OPTION) {
+	                
+	            } else {
+	                SignUpManagement();
+	            }
+	        }
+	    else {
 	        JSONObject jsonResponse = new JSONObject(response);
 	        ArrayList<String> friends = new ArrayList<>();
 	        JSONArray friendsJsonArray = jsonResponse.getJSONArray("friends");
@@ -92,6 +128,14 @@ public class SignInController implements ActionListener{
 	        service.AuthService.setStatus(user.getId(), true); // Cập nhật trạng thái online
 	        window.frame.setVisible(true);  // Hiển thị cửa sổ Index
 	    }
+	}
+
+
+	private void ForgotPassword() {
+		// TODO Auto-generated method stub
+		service.AuthService.resetPassword(this.signIn.getTxtEmail().getText());
+		JOptionPane.showMessageDialog(null, "Mật khẩu mới đã được gửi tới email:"+this.signIn.getTxtEmail().getText(), "Thành công", JOptionPane.INFORMATION_MESSAGE);
+		this.signIn.getTxtPassword().setText("");
 	}
 
 	

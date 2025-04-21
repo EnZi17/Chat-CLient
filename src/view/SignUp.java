@@ -12,10 +12,11 @@ public class SignUp {
     private JTextField txtUsername, txtEmail;
     private JPasswordField txtPassword;
     private JButton btnRegister, btnBack;
+    private JCheckBox chckbxShowPassword; // checkbox hiện mật khẩu
     private SignUpController signUpController;
-    
+
     public void closeSignUp() {
-    	this.frame.setVisible(false);
+        this.frame.setVisible(false);
     }
 
     public static void main(String[] args) {
@@ -29,9 +30,9 @@ public class SignUp {
             }
         });
     }
-    
+
     public SignUp(SignUpController signUpController) {
-    	this.signUpController = signUpController;
+        this.signUpController = signUpController;
     }
 
     public SignUp() {
@@ -39,7 +40,7 @@ public class SignUp {
     }
 
     private void initialize() {
-    	SignUpController signUpController = new SignUpController(this);
+        SignUpController signUpController = new SignUpController(this);
         frame = new JFrame("Đăng Ký");
         frame.setBounds(100, 100, 800, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +98,15 @@ public class SignUp {
         txtPassword = new JPasswordField();
         txtPassword.setBounds(100, 280, 300, 30);
         txtPassword.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLUE));
+        txtPassword.setEchoChar('\u2022'); // Đặt echo char mặc định
         rightPanel.add(txtPassword);
+
+        // Checkbox để hiển thị/ẩn mật khẩu
+        chckbxShowPassword = new JCheckBox("Hiện mật khẩu");
+        chckbxShowPassword.setBounds(100, 310, 150, 20);
+        chckbxShowPassword.setBackground(Color.WHITE);
+        chckbxShowPassword.addActionListener(e -> togglePasswordVisibility());
+        rightPanel.add(chckbxShowPassword);
 
         btnRegister = new JButton("Đăng Ký");
         btnRegister.addActionListener(signUpController);
@@ -118,54 +127,62 @@ public class SignUp {
         btnBack.setFocusPainted(false);
         btnBack.setBorder(new EmptyBorder(5, 5, 5, 5));
         rightPanel.add(btnBack);
-        
     }
 
-	public JFrame getFrame() {
-		return frame;
-	}
+    // Hàm để thay đổi trạng thái ẩn/hiện mật khẩu
+    private void togglePasswordVisibility() {
+        if (chckbxShowPassword.isSelected()) {
+            txtPassword.setEchoChar((char) 0); // Hiện mật khẩu
+        } else {
+            txtPassword.setEchoChar('\u2022'); // Ẩn bằng dấu chấm mặc định
+        }
+    }
 
-	public void setFrame(JFrame frame) {
-		this.frame = frame;
-	}
+    public JFrame getFrame() {
+        return frame;
+    }
 
-	public JTextField getTxtUsername() {
-		return txtUsername;
-	}
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
+    }
 
-	public void setTxtUsername(JTextField txtUsername) {
-		this.txtUsername = txtUsername;
-	}
+    public JTextField getTxtUsername() {
+        return txtUsername;
+    }
 
-	public JTextField getTxtEmail() {
-		return txtEmail;
-	}
+    public void setTxtUsername(JTextField txtUsername) {
+        this.txtUsername = txtUsername;
+    }
 
-	public void setTxtEmail(JTextField txtEmail) {
-		this.txtEmail = txtEmail;
-	}
+    public JTextField getTxtEmail() {
+        return txtEmail;
+    }
 
-	public JPasswordField getTxtPassword() {
-		return txtPassword;
-	}
+    public void setTxtEmail(JTextField txtEmail) {
+        this.txtEmail = txtEmail;
+    }
 
-	public void setTxtPassword(JPasswordField txtPassword) {
-		this.txtPassword = txtPassword;
-	}
+    public JPasswordField getTxtPassword() {
+        return txtPassword;
+    }
 
-	public JButton getBtnRegister() {
-		return btnRegister;
-	}
+    public void setTxtPassword(JPasswordField txtPassword) {
+        this.txtPassword = txtPassword;
+    }
 
-	public void setBtnRegister(JButton btnRegister) {
-		this.btnRegister = btnRegister;
-	}
+    public JButton getBtnRegister() {
+        return btnRegister;
+    }
 
-	public JButton getBtnBack() {
-		return btnBack;
-	}
+    public void setBtnRegister(JButton btnRegister) {
+        this.btnRegister = btnRegister;
+    }
 
-	public void setBtnBack(JButton btnBack) {
-		this.btnBack = btnBack;
-	}
+    public JButton getBtnBack() {
+        return btnBack;
+    }
+
+    public void setBtnBack(JButton btnBack) {
+        this.btnBack = btnBack;
+    }
 }

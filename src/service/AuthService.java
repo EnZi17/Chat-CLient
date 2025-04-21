@@ -67,6 +67,8 @@ public class AuthService {
     	String url = BASE_API + "/conversations/" + id;
     	ArrayList<Conversation> result = new ArrayList<>();
 	    String response = myUtil.Util.getApi(url);
+	    
+	    System.out.println(response);
 	    JSONArray jsonArray = new JSONArray(response);
 	    for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject obj = jsonArray.getJSONObject(i);
@@ -233,7 +235,30 @@ public class AuthService {
         }
     }
 
+    
 
+   
+    public static String resetPassword(String email) {
+        String url = BASE_API + "/users/forgot-password"; 
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("email", email);
+
+        
+        String response =myUtil.Util.postApi(url, requestBody.toString());
+
+       
+        switch (response) {
+            case "ERROR! Response Code: 400":
+                return "Vui lòng cung cấp email hợp lệ";
+            case "ERROR! Response Code: 404":
+                return "Không tìm thấy người dùng với email này";
+            case "ERROR! Response Code: 500":
+                return "Có lỗi xảy ra trong quá trình xử lý";
+            default:
+                return "✅ Mật khẩu mới đã được gửi qua email";
+        }
+    }
 
 
 

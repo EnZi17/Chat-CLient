@@ -3,18 +3,19 @@ package view;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import controller.SignInController;
 
 public class SignIn {
 
     public JFrame frame;
-	private JTextField txtEmail;
+    private JTextField txtEmail;
     private JPasswordField txtPassword;
     private JButton btnLogin, btnSignUp;
-    
+    private JCheckBox chckbxShowPassword; // Thêm checkbox
+    private SignInController controller;
+
     public void closeSignIn() {
-    	this.frame.setVisible(false);
+        this.frame.setVisible(false);
     }
 
     public static void main(String[] args) {
@@ -34,8 +35,7 @@ public class SignIn {
     }
 
     private void initialize() {
-    	
-    	SignInController controller=new SignInController(this);
+        controller = new SignInController(this);
         frame = new JFrame("Đăng Nhập");
         frame.setBounds(100, 100, 800, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,6 +86,12 @@ public class SignIn {
         txtPassword.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLUE));
         rightPanel.add(txtPassword);
 
+        // Checkbox để hiển thị/ẩn mật khẩu
+        chckbxShowPassword = new JCheckBox("Hiện mật khẩu");
+        chckbxShowPassword.setBounds(100, 250, 150, 20);
+        chckbxShowPassword.addActionListener(e -> togglePasswordVisibility());
+        rightPanel.add(chckbxShowPassword);
+
         btnLogin = new JButton("Đăng Nhập");
         btnLogin.addActionListener(controller);
         btnLogin.setBounds(100, 270, 300, 40);
@@ -99,53 +105,60 @@ public class SignIn {
         btnSignUp = new JButton("Đăng Ký");
         btnSignUp.addActionListener(controller);
         btnSignUp.setBounds(100, 330, 300, 40);
-        btnLogin.setBackground(new Color(0, 102, 204));
+        btnSignUp.setBackground(new Color(0, 102, 204));
         btnSignUp.setForeground(Color.BLUE);
         btnSignUp.setFont(new Font("Arial", Font.BOLD, 16));
-        btnLogin.setFocusPainted(false);
+        btnSignUp.setFocusPainted(false);
         btnSignUp.setBorder(new EmptyBorder(5, 5, 5, 5));
         rightPanel.add(btnSignUp);
     }
-    
+
+    // Hàm để thay đổi trạng thái ẩn/hiện mật khẩu
+    private void togglePasswordVisibility() {
+        if (chckbxShowPassword.isSelected()) {
+            txtPassword.setEchoChar((char) 0); // Hiện mật khẩu
+        } else {
+            txtPassword.setEchoChar('\u2022'); // Ẩn mật khẩu
+        }
+    }
+
     public JFrame getFrame() {
-		return frame;
-	}
+        return frame;
+    }
 
-	public void setFrame(JFrame frame) {
-		this.frame = frame;
-	}
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
+    }
 
-	
+    public JTextField getTxtEmail() {
+        return txtEmail;
+    }
 
-	public JTextField getTxtEmail() {
-		return txtEmail;
-	}
+    public void setTxtEmail(JTextField txtEmail) {
+        this.txtEmail = txtEmail;
+    }
 
-	public void setTxtEmail(JTextField txtEmail) {
-		this.txtEmail = txtEmail;
-	}
+    public JPasswordField getTxtPassword() {
+        return txtPassword;
+    }
 
-	public JPasswordField getTxtPassword() {
-		return txtPassword;
-	}
+    public void setTxtPassword(JPasswordField txtPassword) {
+        this.txtPassword = txtPassword;
+    }
 
-	public void setTxtPassword(JPasswordField txtPassword) {
-		this.txtPassword = txtPassword;
-	}
+    public JButton getBtnLogin() {
+        return btnLogin;
+    }
 
-	public JButton getBtnLogin() {
-		return btnLogin;
-	}
+    public void setBtnLogin(JButton btnLogin) {
+        this.btnLogin = btnLogin;
+    }
 
-	public void setBtnLogin(JButton btnLogin) {
-		this.btnLogin = btnLogin;
-	}
+    public JButton getBtnSignUp() {
+        return btnSignUp;
+    }
 
-	public JButton getBtnSignUp() {
-		return btnSignUp;
-	}
-
-	public void setBtnSignUp(JButton btnSignUp) {
-		this.btnSignUp = btnSignUp;
-	}
+    public void setBtnSignUp(JButton btnSignUp) {
+        this.btnSignUp = btnSignUp;
+    }
 }
