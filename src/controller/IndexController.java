@@ -1,9 +1,11 @@
 package controller;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.NonReadableChannelException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
@@ -20,8 +23,13 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.json.JSONArray;
@@ -44,7 +52,7 @@ import myUtil.AudioRecorder;
 import model.Conversation;
 import model.Message;
 import mysocket.MySocket;
-
+import view.CircleImagePanel;
 import view.EmojiPickerView;
 import view.Find;
 import view.Index;
@@ -69,7 +77,7 @@ public class IndexController implements ActionListener{
 	private void initSocket() {
 		// TODO Auto-generated method stub
 		try {
-			URI serverUri = new URI("ws://localhost:5000");
+			URI serverUri = new URI("wss://chat-wtbk.onrender.com");
 			socket = new MySocket(serverUri,index.user.getId());
 			if(socket==null) {
 				socket.connect();
@@ -125,7 +133,9 @@ public class IndexController implements ActionListener{
 	        case "Thêm bạn":
 	            addFriendManagement();
 	            break;
-	        
+	        case "Setting":
+	            settingManagement(index.btnNewButton_1);
+	            break;
 	        default:
 	            System.out.println("Unrecognized button: " + src);
 	    }
@@ -137,6 +147,60 @@ public class IndexController implements ActionListener{
 
 
 
+
+	private void settingManagement(Component parentComponent) {
+	    JPopupMenu popupMenu = new JPopupMenu();
+
+	    JMenuItem changeAvatar = new JMenuItem("Thay đổi Avatar");
+	    JMenuItem changeName = new JMenuItem("Thay đổi Tên");
+
+	    popupMenu.add(changeAvatar);
+	    popupMenu.add(changeName);
+
+	    // Xử lý khi click "Thay đổi Avatar"
+	    changeAvatar.addActionListener(e -> showImageChooser());
+
+	    // Xử lý khi click "Thay đổi Tên"
+	    changeName.addActionListener(e -> showChangeNameDialog());
+
+	    // Hiển thị popup menu tại vị trí chuột
+	    popupMenu.show(parentComponent, 0, parentComponent.getHeight()-100);
+	}
+	private void showImageChooser() {
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Chọn ảnh avatar");
+
+	    // Lọc chỉ ảnh
+	    fileChooser.setAcceptAllFileFilterUsed(false);
+	    fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Ảnh", "jpg", "jpeg", "png"));
+
+	    int result = fileChooser.showOpenDialog(null);
+	    if (result == JFileChooser.APPROVE_OPTION) {
+	        File selectedFile = fileChooser.getSelectedFile();
+	        String base64Image = CircleImagePanel.imageToBase64(selectedFile.getAbsolutePath());
+	        
+	        if (base64Image != null) {
+	        	System.out.println(index.user.getId()+1);
+	        	System.out.println(service.AuthService.updateAvatar(index.user.getId(), base64Image));
+	            index.panel_10.setImage(base64Image);
+	            index.panel_10.repaint();
+	        }
+	    }
+	}
+	
+	private void showChangeNameDialog() {
+	    String newName = JOptionPane.showInputDialog(null,"Tên cũ của bạn là: "+index.user.getUsername() + ", nhập tên mới:");
+	    if (newName != null && !newName.trim().isEmpty()) {
+	        String result = service.AuthService.updateUserName(index.user.getId(), newName);
+	        index.user= service.AuthService.getUserByID(index.user.getId());
+	        JOptionPane.showMessageDialog(null, result);
+	    } else {
+	        JOptionPane.showMessageDialog(null, "Tên mới không được để trống");
+	    }
+	}
+
+
+	
 
 	private void addFriendManagement() {
 		// TODO Auto-generated method stub
@@ -229,11 +293,22 @@ public class IndexController implements ActionListener{
 	    index.updateMess();
 	    
 	    ArrayList<Message> messages = this.index.conversationMessages.get(converstationId);
+	    
+	    User user = service.AuthService.getOtherUserFromConversation(converstationId, index.user.getId());
+	    String avatar = user.getAvatar();
+	    String userName = user.getUsername();
+	    index.panel_10_1.setImage(avatar!=""?avatar:CircleImagePanel.imageToBase64("public/avatar.jpg"));
+	    index.panel_10_1.repaint(); 
+	    index.lblNewLabel.setText(userName);
+	    index.dotJLabel.setVisible(true);    
+	    index.dotJLabel.setForeground(user.isOnline()?Color.GREEN:Color.gray);
 
 	    // Xóa tất cả các message cũ trên giao diện
 	    index.chatBubblePanel.removeAll();
 	    index.chatBubblePanel.revalidate();
 	    index.chatBubblePanel.repaint();
+	    
+	    
 	    
 	    if (messages == null) {
 	        System.err.println("Danh sách messages bị null!");
@@ -272,58 +347,84 @@ public class IndexController implements ActionListener{
 	
 	public void updateConverstations(ArrayList<Conversation> conversations) {
 	    this.index.userListPanel.removeAll();
-
 	    for (Conversation conversation : conversations) {
-	        String buttonText = "";
+	        String username = "";
+	        String avatarBase64 = null;
 	        Color textColor = Color.BLACK;
+	        String conversationId = conversation.getId();
+	        if (conversationId.equals(index.currentConversationId)) {
+	        	User user = service.AuthService.getOtherUserFromConversation(conversationId, index.user.getId());
+	        	index.dotJLabel.setForeground(user.isOnline()?Color.GREEN:Color.gray);
+	        }
 
 	        if (conversation.isGroup()) {
-	            buttonText = conversation.getName() != null ? conversation.getName() : "Group Chat";
+	            username = conversation.getName() != null ? conversation.getName() : "Group Chat";
 	        } else {
 	            for (String participantId : conversation.getParticipants()) {
 	                if (!participantId.equals(index.user.getId())) {
 	                    try {
 	                        User otherUser = service.AuthService.getUserByID(participantId);
-	                        buttonText = otherUser.getUsername();
+	                        username = otherUser.getUsername();
+	                        avatarBase64 = otherUser.getAvatar(); // giả sử avatar là base64
 	                        textColor = otherUser.isOnline() ? Color.GREEN : Color.BLACK;
+	                        
 	                    } catch (Exception e) {
 	                        e.printStackTrace();
-	                        buttonText = "Unknown User";
+	                        username = "Unknown User";
 	                    }
 	                    break;
 	                }
 	            }
 	        }
+	        // Tạo panel chứa avatar và tên
+	        JPanel panel = new JPanel(new BorderLayout(10, 0));
+	        panel.setPreferredSize(new Dimension(196, 60));
+	        panel.setBackground(Color.WHITE);
+	        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-	        JButton userButton = new JButton(buttonText);
-	        userButton.putClientProperty("conversationId", conversation.getId()); // Gán ID thật
-	        userButton.setPreferredSize(new Dimension(196, 50));
-	        userButton.setBackground(Color.white);
-	        userButton.setForeground(textColor);
-	        userButton.setFocusPainted(false);
-	        userButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-	        userButton.setContentAreaFilled(false);
-	        userButton.setOpaque(true);
+	        // Avatar
+	        CircleImagePanel avatar = new CircleImagePanel(avatarBase64 != "" ? avatarBase64 : CircleImagePanel.imageToBase64("public/avatar.jpg"));
+	        avatar.setPreferredSize(new Dimension(40, 40));
 
-	        userButton.addMouseListener(new java.awt.event.MouseAdapter() {
+	        // Username
+	        JLabel nameLabel = new JLabel(username);
+	        nameLabel.setForeground(textColor);
+	        nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+	        nameLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+	        panel.add(avatar, BorderLayout.WEST);
+	        panel.add(nameLabel, BorderLayout.CENTER);
+
+	        // Tạo button vô hình để xử lý sự kiện click
+	        JButton transparentButton = new JButton();
+	        transparentButton.setLayout(new BorderLayout());
+	        transparentButton.add(panel, BorderLayout.CENTER);
+	        transparentButton.putClientProperty("conversationId", conversationId);
+	        transparentButton.setPreferredSize(new Dimension(196, 60));
+	        transparentButton.setContentAreaFilled(false);
+	        transparentButton.setFocusPainted(false);
+	        transparentButton.setBorderPainted(false);
+
+	        transparentButton.addMouseListener(new java.awt.event.MouseAdapter() {
 	            @Override
 	            public void mouseEntered(java.awt.event.MouseEvent evt) {
-	                userButton.setBackground(new Color(235, 236, 240));
+	                panel.setBackground(new Color(235, 236, 240));
 	            }
 
 	            @Override
 	            public void mouseExited(java.awt.event.MouseEvent evt) {
-	                userButton.setBackground(Color.white);
+	                panel.setBackground(Color.WHITE);
 	            }
 	        });
 
-	        userButton.addActionListener(this);
-	        this.index.userListPanel.add(userButton, "growx");
+	        transparentButton.addActionListener(this);
+	        this.index.userListPanel.add(transparentButton, "growx");
 	    }
 
 	    this.index.userListPanel.revalidate();
 	    this.index.userListPanel.repaint();
 	}
+
 
 	public void addConverstation(User user) {
 		ArrayList<String> idStrings = new ArrayList<String>();

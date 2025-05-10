@@ -6,12 +6,15 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 
+import controller.IndexController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Base64;
 public class ChatBubblePanel extends JPanel {
+	private ArrayList<JPanel> emptyPanels = new ArrayList<>();
     public ChatBubblePanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(235, 236, 240)); // Đổi màu nền của toàn bộ panel
@@ -163,9 +166,33 @@ public class ChatBubblePanel extends JPanel {
         repaint();
     }
 
-   
+    public void addEmptyMessage() {
+        for(int i=0;i<10;i++) {
+        	JPanel emptyPanel = new JPanel();
+            emptyPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Căn trái hoặc phải tùy theo nhu cầu của bạn.
+            emptyPanel.setBackground(new Color(235, 236, 240)); // Màu nền của panel
+
+            // Cố định chiều cao và cho nó rỗng
+            emptyPanel.setPreferredSize(new Dimension(getWidth(), 30)); // Chiều cao có thể thay đổi tùy vào nhu cầu
+
+            add(emptyPanel);
+            add(Box.createVerticalStrut(10)); // Khoảng cách giữa các messages
+            revalidate();
+            repaint();
+        }
+    }
+
+    public void removeEmptyMessage() {
+    	for(int i=0;i<10;i++) {
+    		if (!emptyPanels.isEmpty()) {
+                JPanel emptyPanel = emptyPanels.remove(emptyPanels.size() - 1); // Lấy panel cuối cùng trong danh sách
+                remove(emptyPanel); // Xóa emptyPanel khỏi ChatBubblePanel
+                revalidate();
+                repaint();
+            }
+        }
+        
+    }
 
 
-
-
-}
+} 

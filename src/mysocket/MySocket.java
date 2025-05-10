@@ -48,7 +48,7 @@ public class MySocket extends WebSocketClient{
 
 	        String content = msg.optString("content", "");
 	        boolean hasAttachments = msg.has("attachments") && msg.getJSONArray("attachments").length() > 0;
-
+	        
 	        if (hasAttachments) {
 	            // Lấy danh sách file base64
 	            for (int i = 0; i < msg.getJSONArray("attachments").length(); i++) {

@@ -35,8 +35,12 @@ public class Index {
     public HashMap<String, ArrayList<Message>> conversationMessages;
     public JPanel userListPanel;
     public String currentConversationId;
-    private JTextField textField_2;
-    
+    public JTextField textField_2;
+    public CircleImagePanel panel_10;
+    public CircleImagePanel panel_10_1;
+    public JButton btnNewButton_1;
+    public JLabel lblNewLabel;
+    public JLabel dotJLabel;
 
     
 	public static void main(String[] args) {
@@ -82,6 +86,7 @@ public class Index {
     	IndexController controller = new IndexController(this);
     	
         frame = new JFrame("Index");
+        frame.setResizable(false);
         frame.getContentPane().setBackground(new Color(217,217,217));
         frame.setBackground(new Color(18, 20, 22));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,13 +113,7 @@ public class Index {
         panel.setLayout(sl_panel);
         
        
-        
-        JButton btnNewButton = new JButton("New button");
-        sl_panel.putConstraint(SpringLayout.NORTH, btnNewButton, 10, SpringLayout.NORTH, panel);
-        sl_panel.putConstraint(SpringLayout.WEST, btnNewButton, 10, SpringLayout.WEST, panel);
-        sl_panel.putConstraint(SpringLayout.SOUTH, btnNewButton, 54, SpringLayout.NORTH, panel);
-        sl_panel.putConstraint(SpringLayout.EAST, btnNewButton, -10, SpringLayout.EAST, panel);
-        panel.add(btnNewButton);
+        ImageIcon icon = new ImageIcon("public/avatar.jpg");
         springLayout.putConstraint(SpringLayout.SOUTH, panel_1, 683, SpringLayout.NORTH, frame.getContentPane());
         panel_1.setBackground(new Color(34, 38, 43));
         frame.getContentPane().add(panel_1);
@@ -128,12 +127,25 @@ public class Index {
         
 
         
-        JButton btnNewButton_1 = new JButton("New button");
+        btnNewButton_1 = new JButton(); // không truyền "Setting" ở đây
+        btnNewButton_1.setBackground(new Color(0, 90, 224));
+
+     // Đặt ActionCommand thủ công
+        btnNewButton_1.setActionCommand("Setting");
+
+     // Thêm icon từ file
+        ImageIcon icons = new ImageIcon("public/setting.png");
+        Image img = icons.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH); // chỉnh kích thước nếu cần
+        btnNewButton_1.setIcon(new ImageIcon(img));
+
+     // Không hiện text
+        btnNewButton_1.setText(null);
+        btnNewButton_1.addActionListener(controller);
+        sl_panel.putConstraint(SpringLayout.WEST, btnNewButton_1, 10, SpringLayout.WEST, panel);
+        sl_panel.putConstraint(SpringLayout.EAST, btnNewButton_1, -10, SpringLayout.EAST, panel);
         btnNewButton_1.addActionListener(controller);
         sl_panel.putConstraint(SpringLayout.NORTH, btnNewButton_1, -54, SpringLayout.SOUTH, panel);
-        sl_panel.putConstraint(SpringLayout.WEST, btnNewButton_1, 0, SpringLayout.WEST, btnNewButton);
         sl_panel.putConstraint(SpringLayout.SOUTH, btnNewButton_1, -10, SpringLayout.SOUTH, panel);
-        sl_panel.putConstraint(SpringLayout.EAST, btnNewButton_1, 54, SpringLayout.WEST, panel);
         panel.add(btnNewButton_1);
         springLayout.putConstraint(SpringLayout.EAST, panel_2, 0, SpringLayout.EAST, frame.getContentPane());
         panel_2.setBackground(new Color(217,217,217));
@@ -164,6 +176,14 @@ public class Index {
         JPanel panel_4 = new JPanel();
         springLayout.putConstraint(SpringLayout.NORTH, panel_4, 0, SpringLayout.NORTH, frame.getContentPane());
         springLayout.putConstraint(SpringLayout.WEST, panel_4, 0, SpringLayout.EAST, panel);
+        
+        String imageString = this.user.getAvatar() != "" ? this.user.getAvatar() : CircleImagePanel.imageToBase64("public/avatar.jpg");;
+        panel_10 = new CircleImagePanel(imageString);
+        sl_panel.putConstraint(SpringLayout.NORTH, panel_10, 10, SpringLayout.NORTH, panel);
+        sl_panel.putConstraint(SpringLayout.WEST, panel_10, 0, SpringLayout.WEST, btnNewButton_1);
+        sl_panel.putConstraint(SpringLayout.SOUTH, panel_10, 54, SpringLayout.NORTH, panel);
+        sl_panel.putConstraint(SpringLayout.EAST, panel_10, 0, SpringLayout.EAST, btnNewButton_1);
+        panel.add(panel_10);
         springLayout.putConstraint(SpringLayout.SOUTH, panel_4, -2, SpringLayout.NORTH, panel_1);
         springLayout.putConstraint(SpringLayout.EAST, panel_4, 0, SpringLayout.EAST, panel_1);
         panel_4.setBackground(new Color(255, 255, 255));
@@ -183,7 +203,13 @@ public class Index {
         panel_4.add(textField_2);
         textField_2.setColumns(10);
         
-        JButton btnNewButton_4 = new JButton("Thêm bạn");
+        
+
+        JButton btnNewButton_4 = new JButton(); // không truyền "Setting" ở đây
+        btnNewButton_4.setActionCommand("Thêm bạn");
+        ImageIcon iconf = new ImageIcon("public/person.png");
+        Image imgf = iconf.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH); // chỉnh kích thước nếu cần
+        btnNewButton_4.setIcon(new ImageIcon(imgf));
         btnNewButton_4.addActionListener(controller);
         sl_panel_4.putConstraint(SpringLayout.NORTH, btnNewButton_4, 0, SpringLayout.NORTH, textField_2);
         sl_panel_4.putConstraint(SpringLayout.WEST, btnNewButton_4, 6, SpringLayout.EAST, textField_2);
@@ -195,6 +221,31 @@ public class Index {
         springLayout.putConstraint(SpringLayout.SOUTH, panel_6, 73, SpringLayout.NORTH, frame.getContentPane());
         panel_6.setBackground(new Color(255, 255, 255));
         frame.getContentPane().add(panel_6);
+        SpringLayout sl_panel_6 = new SpringLayout();
+        panel_6.setLayout(sl_panel_6);
+        
+        panel_10_1 = new CircleImagePanel("");
+        sl_panel_6.putConstraint(SpringLayout.NORTH, panel_10_1, 10, SpringLayout.NORTH, panel_6);
+        sl_panel_6.putConstraint(SpringLayout.WEST, panel_10_1, 10, SpringLayout.WEST, panel_6);
+        sl_panel_6.putConstraint(SpringLayout.SOUTH, panel_10_1, -10, SpringLayout.SOUTH, panel_6);
+        sl_panel_6.putConstraint(SpringLayout.EAST, panel_10_1, 68, SpringLayout.WEST, panel_6);
+        panel_6.add(panel_10_1);
+        
+        lblNewLabel = new JLabel("");
+        sl_panel_6.putConstraint(SpringLayout.NORTH, lblNewLabel, 0, SpringLayout.NORTH, panel_10_1);
+        sl_panel_6.putConstraint(SpringLayout.WEST, lblNewLabel, 15, SpringLayout.EAST, panel_10_1);
+        sl_panel_6.putConstraint(SpringLayout.SOUTH, lblNewLabel, 34, SpringLayout.NORTH, panel_6);
+        sl_panel_6.putConstraint(SpringLayout.EAST, lblNewLabel, 254, SpringLayout.EAST, panel_10_1);
+        lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        panel_6.add(lblNewLabel);
+        panel_10_1.setLayout(null);
+        
+        dotJLabel = new JLabel(".");
+        dotJLabel.setVisible(false);
+        dotJLabel.setForeground(Color.green);
+        dotJLabel.setBounds(33, -64, 50, 117);
+        panel_10_1.add(dotJLabel);
+        dotJLabel.setFont(new Font("Segoe UI", Font.PLAIN, 130));
         
         
         
@@ -224,6 +275,13 @@ public class Index {
         panel_5.add(btnNewButton_3);
         
         textField_1 = new JTextArea();
+        textField_1.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "sendAction");
+        textField_1.getActionMap().put("sendAction", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnNewButton_3.doClick(); // Kích hoạt nút Gửi
+            }
+        });
         sl_panel_5.putConstraint(SpringLayout.EAST, textField_1, -50, SpringLayout.WEST, btnNewButton_3);
         sl_panel_5.putConstraint(SpringLayout.SOUTH, textField_1, 0, SpringLayout.SOUTH, btnNewButton_3);
         textField_1.setCaretColor(Color.BLACK);
@@ -314,9 +372,10 @@ public class Index {
         panel_7.add(btnNewButton_2_2);
         
         
-        Timer timer = new Timer(5000, new ActionListener() { // 5000ms = 5 giây
+        Timer timer = new Timer(10000, new ActionListener() { // 5000ms = 5 giây
             @Override
             public void actionPerformed(ActionEvent e) {
+            	conversations = service.AuthService.getConversations(user.getId());
                 controller.updateConverstations(conversations);;
             }
         });

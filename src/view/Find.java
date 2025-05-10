@@ -55,6 +55,7 @@ public class Find {
         frame.getContentPane().add(separator);
 
         textField = new JTextField();
+        
         textField.setBounds(88, 63, 282, 30);
         frame.getContentPane().add(textField);
         textField.setColumns(10);

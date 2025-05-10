@@ -13,7 +13,7 @@ import model.Message;
 import model.User;
 
 public class AuthService {
-    private static final String BASE_API = "http://localhost:5000";
+    private static final String BASE_API = "https://chat-wtbk.onrender.com";
 
     public static String login(String email, String password) {
         String url = BASE_API + "/users/login";
@@ -227,6 +227,7 @@ public class AuthService {
 
             String conversationId = responseObject.getString("_id"); // Lấy conversationId
             System.out.println("Tạo conversation thành công. ID: " + conversationId);
+            
             return conversationId;
 
         } catch (Exception e) {
@@ -260,8 +261,94 @@ public class AuthService {
         }
     }
 
+    public static String getConversationAvatar(String conversationId, String userId) {
+        String url = BASE_API + "/conversations/info/" + conversationId + "?userId=" + userId;
 
+        try {
+            String response = myUtil.Util.getApi(url);
+            JSONObject obj = new JSONObject(response);
+            return obj.optString("avatar", "");
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy avatar cuộc trò chuyện: " + e.getMessage());
+            return "";
+        }
+    }
+    
+    public static User getOtherUserFromConversation(String conversationId, String userId) {
+        String url = BASE_API + "/conversations/info/" + conversationId + "?userId=" + userId;
 
+        try {
+            String response = myUtil.Util.getApi(url);
+            JSONObject json = new JSONObject(response);
 
+            // Chuyển đổi JSON thành đối tượng User
+            User user = new User();
+            user.setId(json.optString("_id", ""));
+            user.setUsername(json.optString("username", ""));
+            user.setEmail(json.optString("email", ""));
+            user.setAvatar(json.optString("avatar", ""));
+            user.setOnline(json.optBoolean("isOnline", false));
+            user.setUsername(json.optString("username",""));
+
+            String lastOnlineStr = json.optString("lastOnline", null);
+            if (lastOnlineStr != null && !lastOnlineStr.equals("null")) {
+                user.setLastOnline(Instant.parse(lastOnlineStr));
+            }
+
+            return user;
+
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi khi lấy thông tin người dùng từ conversation: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    
+
+    public static String updateAvatar(String userId, String avatarUrl) {
+        String url = BASE_API + "/users/update-avatar/" + userId;
+
+        // Tạo request body
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("avatarUrl", avatarUrl);
+
+        // Gửi request tới API
+        String response = myUtil.Util.postApi(url, requestBody.toString());
+
+        // Xử lý phản hồi từ API
+        switch (response) {
+            case "ERROR! Response Code: 400":
+                return "Vui lòng cung cấp URL của avatar";
+            case "ERROR! Response Code: 404":
+                return "Không tìm thấy người dùng";
+            case "ERROR! Response Code: 500":
+                return "Có lỗi xảy ra khi cập nhật avatar";
+            default:
+                return "✅ Avatar đã được cập nhật thành công!";
+        }
+    }
+    
+    public static String updateUserName(String userId, String userName) {
+        String url = BASE_API + "/users/update-username/" + userId;
+
+        // Tạo request body
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("newName", userName);
+
+        // Gửi request tới API
+        String response = myUtil.Util.postApi(url, requestBody.toString());
+
+        // Xử lý phản hồi từ API
+        switch (response) {
+            case "ERROR! Response Code: 400":
+                return "Vui lòng cung cấp URL của avatar";
+            case "ERROR! Response Code: 404":
+                return "Không tìm thấy người dùng";
+            case "ERROR! Response Code: 500":
+                return "Có lỗi xảy ra khi cập nhật avatar";
+            default:
+                return "User Name đã được cập nhật thành công!";
+        }
+    }
 
 }
